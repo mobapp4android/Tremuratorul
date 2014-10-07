@@ -1,69 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>Acceleration</title>
-         
-        <script type="text/javascript" charset="utf-8" src="PhoneGap.js"></script>
-        <script type="text/javascript" charset="utf-8">
-             
-            // The watch id references the current `watchAcceleration`
-            var watchID = null;
-             
-            //wait for PhoneGap to load
-            document.addEventListener("deviceready", loaded, false);
-             
-            // PhoneGap is ready
-            function loaded() {
-                startWatch();
-            }
-             
-            // Start watching the acceleration
-             
-            function startWatch() {
-                 
-                var previousReading = {
-                    x: null,
-                    y: null,
-                    z: null
-                }
-                 
-                navigator.accelerometer.watchAcceleration(function (acceleration) {
-                  var changes = {},
-                  bound = 0.2;
-                  if (previousReading.x !== null) {
-                      changes.x = Math.abs(previousReading.x, acceleration.x);
-                      changes.y = Math.abs(previousReading.y, acceleration.y);
-                      changes.z = Math.abs(previousReading.z, acceleration.z);
-                  }
-                   
-                  if (changes.x > bound && changes.y > bound && changes.z > bound) {
-                    shaken();
-                  }
-                   
-                  previousReading = {
-                  x: reading.x,
-                  y: reading.y,
-                  z: reading.z
-                  }
-                   
-                  }, onError, { frequency: 2000 });
-            }
-             
-            function shaken(){
-                
-				var errorMsg = "<p>Example error message</p>";
-				document.getElementById("error").innerHTML = errorMsg;
-            }
-             
-            // Error
-            function onError() {
-                alert('onError!');
-            }
-             
-            </script>
-    </head>
-    <body>
-	<div > Tremura-l fratie !!! </div>
-	<div id="error"> </div>
-    </body>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+<title>Scanare cod QR</title>
+
+<script src="phonegap.js" type="text/javascript"></script>
+
+<script>
+// Bazat pe http://docs.phonegap.com/en/3.0.0/cordova_events_events.md.html#deviceready .
+function onLoad() {
+	// Când PhoneGap a terminat de inițializat, va declanșa "deviceready" și doar atunci apelăm "onDeviceReady" de mai jos.
+	document.addEventListener("deviceready", onDeviceReady, false);
+}
+
+var scanner; // declarăm variabilă globală, ca s-o putem accesa
+
+function onDeviceReady() { // aici se pune tot programul; numele "onDeviceReady" poate fi și altul, dar trebuie schimbat și mai sus
+    scanner = { // variabila scanner va fi de tip obiect, înăuntru cu cheia "scaneaza" și valoarea funcție
+		scaneaza: function() {
+			cordova.plugins.barcodeScanner.scan( // pornim scanarea
+				function (rezultat) { // funcția de succes
+					if(!rezultat.cancelled) // scanarea nu a fost oprită, obține codul scanat
+						alert("Text: "+rezultat.text+"\nFormat: "+rezultat.format+"\nOprit: "+rezultat.cancelled);
+					else // scanarea a fost oprită
+						alert("Scanarea a fost oprită.");
+				},
+				function (eroare) { // funcția de eroare
+					alert("Eroare scanare: "+eroare);
+				}
+			);
+		}
+	}
+}
+</script>
+</head>
+
+<body onload="onLoad();">
+<button onclick="scanner.scaneaza();">Scanează</button>
+</body>
 </html>
