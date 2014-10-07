@@ -1,41 +1,52 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
 <title>Scanare cod QR</title>
 
 <script src="phonegap.js" type="text/javascript"></script>
+<!-- Merge și cordova.js, în loc de phonegap.js, pentru PhoneGap Build. -->
+<!-- Merge și fără să-l includem aici, serviciul va adăuga automat modulul PhoneGap/Cordova. -->
+
+<script src="barcodescanner.js" type="text/javascript"></script>
+<!-- plugin-ul (modulul) de scanare cod de bare/QR -->
+<!-- Merge și fără să-l includem aici, oricum e specificat în config.xml. -->
 
 <script>
-// Bazat pe http://docs.phonegap.com/en/3.0.0/cordova_events_events.md.html#deviceready .
-function onLoad() {
-	// Când PhoneGap a terminat de inițializat, va declanșa "deviceready" și doar atunci apelăm "onDeviceReady" de mai jos.
-	document.addEventListener("deviceready", onDeviceReady, false);
+    
+function laIncarcare() { // poate avea și alt nume, dar atunci trebuie redenumit și la apel, în marcajul <body>
+	// Când PhoneGap/Cordova a terminat inițializarea, va declanșa evenimentul "deviceready" și doar atunci apelăm "laInitializat" de mai jos.
+	document.addEventListener("deviceready", laInitializat, false);
+    // Al treilea parametru, implicit și de obicei "false", se referă la ordinea de tratare a evenimentelor. Detalii la http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-phases .
 }
 
-var scanner; // declarăm variabilă globală, ca s-o putem accesa
+var obScanare; // declarăm variabilă globală (adică, o declarăm în afara vreunei funcții), ca s-o putem accesa din funcții globale; deocamdată, e nedefinită
 
-function onDeviceReady() { // aici se pune tot programul; numele "onDeviceReady" poate fi și altul, dar trebuie schimbat și mai sus
-    scanner = { // variabila scanner va fi de tip obiect, înăuntru cu cheia "scaneaza" și valoarea funcție
-		scaneaza: function() {
-			cordova.plugins.barcodeScanner.scan( // pornim scanarea
-				function (rezultat) { // funcția de succes
-					if(!rezultat.cancelled) // scanarea nu a fost oprită, obține codul scanat
-						alert("Text: "+rezultat.text+"\nFormat: "+rezultat.format+"\nOprit: "+rezultat.cancelled);
-					else // scanarea a fost oprită
-						alert("Scanarea a fost oprită.");
-				},
-				function (eroare) { // funcția de eroare
-					alert("Eroare scanare: "+eroare);
-				}
-			);
-		}
-	}
+function laInitializat() { // aici se pune tot programul; numele "laInitializat" poate fi și altul, dar trebuie schimbat și mai sus
+    obScanare = cordova.plugins.barcodeScanner; // variabila globală va fi obiect de scanare; putem să asignăm acum, PhoneGap/Cordova a fost inițializat
 }
+
+function scaneaza() {
+    if(obScanare!=undefined) // poate încă nu s-a inițializat PhoneGap/Cordova, sau suntem într-un navigator web, fără acces la hardware; în acest caz, apelul obScanare.scan ar da eroare
+        obScanare.scan(laSucces,laEroare); // laSucces și laEroare sunt două funcții callback, adică vor fi apelate după terminarea scanării, în caz de succes scanare sau eroare la scanare; sunt implementate mai jos; le putem denumi și altfel
+	else alert("Nu există suport pentru scanare.");
+}
+   
+function laSucces (rezultat) { // funcția de succes, obScanare.scan o apelează și îi pasează ca parametru rezultatul scanării (de tip obiect)
+    if(!rezultat.cancelled) // scanarea nu a fost oprită de utilizator, a decurs normal, trebuie să obținem datele scanate
+        alert("Text scanat: "+rezultat.text+"\nFormat cod: "+rezultat.format+"\nOprit de utilizator: "+rezultat.cancelled); // afișăm rezultatul scanării
+    else // scanarea a fost oprită de utilizator
+        alert("Scanarea a fost oprită.");
+}
+    
+function laEroare (eroare) { // funcția de eroare, obScanare.scan o apelează și îi pasează ca parametru descrierea problemei
+    alert("Eroare scanare: "+eroare); // "eroare" este mesajul de eroare raportat de plugin, îl afișăm
+}
+    
 </script>
 </head>
 
-<body onload="onLoad();">
-<button onclick="scanner.scaneaza();">Scanează</button>
+<body onload="laIncarcare();"> <!-- la încărcarea paginii, inițializăm PhoneGap/Cordova, mai sus -->
+<button onclick="scaneaza();">Scanează</button> <!-- puteam apela și "obScanare.scan(laSucces,laEroare);" direct, dar e mai clar astfel -->
 </body>
 </html>

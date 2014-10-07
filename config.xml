@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns     = "http://www.w3.org/ns/widgets"
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+        id        = "com.cim.scanare"
+        version   = "1.0.0">
+	<name>Scanare cod de bare</name>
+
+	<description>
+        Aplicație demo, pentru cursul de Programarea aplicațiilor mobile.
+	</description>
+
+	<author href="http://www.centruldeinformatica.ro/" email="cim@cim.brinel.ro">
+        Centrul de Informatică Minieră
+	</author>
+
+	<!-- Aplicația folosește plugin-ul de scanare. -->
+	<gap:plugin name="com.phonegap.plugins.barcodescanner" />
+
+	<!-- Prima pagină a aplicației (index.html este și implicit). -->
+	<content src="index.html" />
+
+	<!-- Nu vrem nici o permisiune, dar PhoneGap Build va activa oricum accesul la Internet și la cameră. -->
+	<preference name="permissions" value="none" />
+	
+	<!-- Pictograma aplicației, furnizată de noi. -->
+	<icon src="icon.png" />
+</widget>
