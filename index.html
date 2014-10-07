@@ -50,7 +50,9 @@
             }
              
             function shaken(){
-                $(".error-messages").text("The form is not complete").show();
+                
+				var errorMsg = "<p>Example error message</p>";
+				document.getElementById("error").innerHTML = errorMsg;
             }
              
             // Error
@@ -62,6 +64,6 @@
     </head>
     <body>
 	<div > Tremura-l fratie !!! </div>
-	<div class="error-messages"></div>
+	<div id="error"> </div>
     </body>
 </html>
